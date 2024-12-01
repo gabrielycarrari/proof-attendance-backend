@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Path
 from fastapi.middleware.cors import CORSMiddleware
 
 from pydantic import BaseModel
@@ -6,6 +6,9 @@ from fastapi import HTTPException, status
 from fastapi.responses import JSONResponse
 
 from dtos.entrar_dto import EntrarDto
+from dtos.inserir_evento_dto import InserirEventoDto
+from models.evento_model import Evento
+from repositories.evento_repo import EventoRepo
 from repositories.usuario_repo import UsuarioRepo
 
 from routes import auth_routes
@@ -13,11 +16,12 @@ from dtos.inserir_usuario_dto import InserirUsuarioDTO
 from dtos.problem_details_dto import ProblemDetailsDto
 from models.usuario_model import Usuario
 from repositories.usuario_repo import UsuarioRepo
-from util.auth import obter_hash_senha, conferir_senha
+from util.auth import gerar_chave_unica, obter_hash_senha, conferir_senha
 
 
 UsuarioRepo.criar_tabela()
 UsuarioRepo.inserir_usuarios_json("sql/usuarios.json")
+EventoRepo.criar_tabela()
 
 
 app = FastAPI()
@@ -58,3 +62,23 @@ async def entrar(entrar_dto: EntrarDto):
             "nome": usuario_entrou.nome,
             "perfil": usuario_entrou.perfil
         }, status_code=200)
+
+
+@app.get("/obter_eventos/{id_organizador}")
+async def obter_eventos(id_organizador: int = Path(..., title="Id do Produto", ge=1)):
+    eventos = EventoRepo.obter_todos_por_organizador(id_organizador)
+    return eventos
+
+
+@app.post("/cadastrar_evento", status_code=200)
+async def cadastrar_evento(evento_dto: InserirEventoDto):
+    chave_unica = gerar_chave_unica(evento_dto.id_organizador, evento_dto.nome, evento_dto.data_inicio, evento_dto.hora_inicio)
+
+    #TODO: Validar se a chave única já existe
+    #TODO: Validar se a data e hora do evento já passou
+    #TODO: Validar o id do organizador
+    hora_inicio = evento_dto.hora_inicio.strftime('%H:%M') 
+    novo_evento = Evento(None, evento_dto.nome, evento_dto.descricao, evento_dto.carga_horaria, evento_dto.data_inicio, hora_inicio, chave_unica, evento_dto.id_organizador)
+    novo_evento = EventoRepo.inserir(novo_evento)
+    return novo_evento
+
