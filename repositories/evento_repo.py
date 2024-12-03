@@ -51,47 +51,51 @@ class EventoRepo:
             print(ex)
             return None
 
-    # @classmethod
-    # def alterar(cls, usuario: Usuario) -> bool:
-    #     try:
-    #         with obter_conexao() as conexao:
-    #             cursor = conexao.cursor()
-    #             cursor.execute(
-    #                 SQL_ALTERAR,
-    #                 (
-    #                     usuario.nome,
-    #                     usuario.cpf,
-    #                     usuario.email,
-    #                     usuario.id,
-    #                 ),
-    #             )
-    #             return cursor.rowcount > 0
-    #     except sqlite3.Error as ex:
-    #         print(ex)
-    #         return False
+    @classmethod
+    def alterar(cls, evento: Evento) -> bool:
+        try:
+            with obter_conexao() as conexao:
+                cursor = conexao.cursor()
+                cursor.execute(
+                    SQL_ALTERAR,
+                    (
+                        evento.nome,
+                        evento.descricao,
+                        evento.carga_horaria,
+                        evento.data_inicio,
+                        evento.hora_inicio,
+                        evento.chave_unica,
+                        evento.id_organizador,
+                        evento.id,
+                    ),
+                )
+                return cursor.rowcount > 0
+        except sqlite3.Error as ex:
+            print(ex)
+            return False
 
-    # @classmethod
-    # def excluir(cls, id: int) -> bool:
-    #     try:
-    #         with obter_conexao() as conexao:
-    #             cursor = conexao.cursor()
-    #             cursor.execute(SQL_EXCLUIR, (id,))
-    #             return cursor.rowcount > 0
-    #     except sqlite3.Error as ex:
-    #         print(ex)
-    #         return False
+    @classmethod
+    def excluir(cls, id: int) -> bool:
+        try:
+            with obter_conexao() as conexao:
+                cursor = conexao.cursor()
+                cursor.execute(SQL_EXCLUIR, (id,))
+                return cursor.rowcount > 0
+        except sqlite3.Error as ex:
+            print(ex)
+            return False
 
-    # @classmethod
-    # def obter_por_id(cls, id: int) -> Optional[Usuario]:
-    #     try:
-    #         with obter_conexao() as conexao:
-    #             cursor = conexao.cursor()
-    #             tupla = cursor.execute(SQL_OBTER_POR_ID, (id,)).fetchone()
-    #             usuario = Usuario(*tupla)
-    #             return usuario
-    #     except sqlite3.Error as ex:
-    #         print(ex)
-    #         return None
+    @classmethod
+    def obter_por_id(cls, id: int) -> Optional[Evento]:
+        try:
+            with obter_conexao() as conexao:
+                cursor = conexao.cursor()
+                tupla = cursor.execute(SQL_OBTER_POR_ID, (id,)).fetchone()
+                evento = Evento(*tupla)
+                return evento
+        except sqlite3.Error as ex:
+            print(ex)
+            return None
 
     # @classmethod
     # def obter_quantidade_por_perfil(cls, perfil: int = 1) -> Optional[int]:

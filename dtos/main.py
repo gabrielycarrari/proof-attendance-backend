@@ -5,7 +5,6 @@ from pydantic import BaseModel
 from fastapi import HTTPException, status
 from fastapi.responses import JSONResponse
 
-from dtos.alterar_evento_dto import AlterarEventoDto
 from dtos.entrar_dto import EntrarDto
 from dtos.inserir_evento_dto import InserirEventoDto
 from models.evento_model import Evento
@@ -104,6 +103,6 @@ async def alterar_evento(evento_dto: AlterarEventoDto):
     #TODO: Validar se a data e hora do evento já passou
     #TODO: Validar o id do organizador
     hora_inicio = evento_dto.hora_inicio.strftime('%H:%M') 
-    novo_evento = Evento(evento_dto.id, evento_dto.nome, evento_dto.descricao, evento_dto.carga_horaria, evento_dto.data_inicio, hora_inicio, chave_unica, evento_dto.id_organizador)
+    novo_evento = Evento(None, evento_dto.nome, evento_dto.descricao, evento_dto.carga_horaria, evento_dto.data_inicio, hora_inicio, chave_unica, evento_dto.id_organizador)
     novo_evento = EventoRepo.alterar(novo_evento)
     return novo_evento

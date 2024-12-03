@@ -6,7 +6,7 @@ SQL_CRIAR_TABELA = """
         carga_horaria INTEGER NOT NULL,
         data_inicio DATE NOT NULL,
         hora_inicio TEXT NOT NULL,
-        chave_unica TEXT NOT NULL,
+        chave_unica TEXT NOT NULL UNIQUE,
         id_organizador INTEGER NOT NULL,
         FOREIGN KEY (id_organizador) REFERENCES usuario(id))
 """
@@ -23,14 +23,14 @@ SQL_OBTER_TODOS_POR_ORGANIZADOR = """
     ORDER BY data_inicio DESC
 """
 
-###
 
 SQL_ALTERAR = """
-    UPDATE usuario
-    SET nome=?, cpf=?, email=?
+    UPDATE evento
+    SET nome=?, descricao=?, carga_horaria=?, data_inicio=?, hora_inicio=?, chave_unica=?, id_organizador=?
     WHERE id=?
 """
 
+###
 SQL_ALTERAR_TOKEN = """
     UPDATE usuario
     SET token=?
@@ -44,13 +44,13 @@ SQL_ALTERAR_SENHA = """
 """
 
 SQL_EXCLUIR = """
-    DELETE FROM usuario    
+    DELETE FROM evento    
     WHERE id=?
 """
 
 SQL_OBTER_POR_ID = """
-    SELECT id, nome, cpf, email, perfil
-    FROM usuario
+    SELECT id, nome, descricao, carga_horaria, data_inicio, hora_inicio, chave_unica
+    FROM evento
     WHERE id=?
 """
 
