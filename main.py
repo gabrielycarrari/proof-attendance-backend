@@ -12,13 +12,12 @@ from models.evento_model import Evento
 from repositories.evento_repo import EventoRepo
 from repositories.usuario_repo import UsuarioRepo
 
-from routes import auth_routes
+from routes import auth_routes, certificate_routes
 from dtos.inserir_usuario_dto import InserirUsuarioDTO
 from dtos.problem_details_dto import ProblemDetailsDto
 from models.usuario_model import Usuario
 from repositories.usuario_repo import UsuarioRepo
 from util.auth import gerar_chave_unica, obter_hash_senha, conferir_senha
-
 
 UsuarioRepo.criar_tabela()
 UsuarioRepo.inserir_usuarios_json("sql/usuarios.json")
