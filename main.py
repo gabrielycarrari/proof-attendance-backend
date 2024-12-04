@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Path
+from fastapi import FastAPI, Form, Path
 from fastapi.middleware.cors import CORSMiddleware
 
 from pydantic import BaseModel
@@ -107,3 +107,15 @@ async def alterar_evento(evento_dto: AlterarEventoDto):
     novo_evento = Evento(evento_dto.id, evento_dto.nome, evento_dto.descricao, evento_dto.carga_horaria, evento_dto.data_inicio, hora_inicio, chave_unica, evento_dto.id_organizador)
     novo_evento = EventoRepo.alterar(novo_evento)
     return novo_evento
+
+@app.post("/excluir_evento", status_code=204)
+async def excluir_evento(id_evento: int = Form(..., title="Id do Evento", ge=1)):
+    if EventoRepo.excluir(id_evento):
+        return None
+    pd = ProblemDetailsDto(
+        "int",
+        f"O evento com id <b>{id_evento}</b> não foi encontrado.",
+        "value_not_found",
+        ["body", "id_evento"],
+    )
+    return JSONResponse(pd.to_dict(), status_code=404)
