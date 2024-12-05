@@ -12,3 +12,5 @@ python-dotenv
 # mailersend
 # pyJWT
 web3
+reportlab
+PyPDF2

@@ -1,9 +1,10 @@
+from io import BytesIO
 from fastapi import FastAPI, Form, Path
 from fastapi.middleware.cors import CORSMiddleware
 
 from pydantic import BaseModel
 from fastapi import HTTPException, status
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
 
 from dtos.alterar_evento_dto import AlterarEventoDto
 from dtos.entrar_dto import EntrarDto
@@ -18,6 +19,7 @@ from dtos.problem_details_dto import ProblemDetailsDto
 from models.usuario_model import Usuario
 from repositories.usuario_repo import UsuarioRepo
 from util.auth import gerar_chave_unica, obter_hash_senha, conferir_senha
+from util.generate_certificate import generate_certificate
 
 UsuarioRepo.criar_tabela()
 UsuarioRepo.inserir_usuarios_json("sql/usuarios.json")
@@ -118,3 +120,23 @@ async def excluir_evento(id_evento: int = Form(..., title="Id do Evento", ge=1))
         ["body", "id_evento"],
     )
     return JSONResponse(pd.to_dict(), status_code=404)
+
+
+
+@app.post("/generate-certificate/{id_presenca}")
+async def generate_pdf(id_presenca: int = Path(..., title="Id da Presença", ge=1)):
+    presenca = EventoRepo.obter_por_id(id_presenca)
+    if not presenca:
+        pd = ProblemDetailsDto("str", "Presença não encontrada.", "value_not_found", ["body", "id_presenca"])
+        return JSONResponse(pd.to_dict(), status_code=404)
+    
+    evento = EventoRepo.obter_por_id(presenca.id_evento)
+    participante = UsuarioRepo.obter_por_id(presenca.id_participante)
+    if not evento or not participante:
+        pd = ProblemDetailsDto("str", "Evento ou participante não encontrado.", "value_not_found", ["body", "id_evento", "id_participante"])
+        return JSONResponse(pd.to_dict(), status_code=404)
+    
+    certificate_pdf = generate_certificate(participante.nome, evento.data_inicio, evento.hora_inicio, evento.carga_horaria, evento.chave_unica, evento.nome)
+    with open(certificate_pdf, "rb") as file:
+        filename = f"certificate_{evento.nome.split(" ")[0]}_{participante.nome.split(" ")[0]}.pdf"
+        return FileResponse(file, media_type='application/pdf', filename=filename)
