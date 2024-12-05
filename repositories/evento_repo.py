@@ -45,8 +45,8 @@ class EventoRepo:
             with obter_conexao() as conexao:
                 cursor = conexao.cursor()
                 tuplas = cursor.execute(SQL_OBTER_TODOS_POR_ORGANIZADOR, (organizador,)).fetchall()
-                usuarios = [Evento(*t) for t in tuplas]
-                return usuarios
+                eventos = [Evento(*t) for t in tuplas]
+                return eventos
         except sqlite3.Error as ex:
             print(ex)
             return None
@@ -96,6 +96,19 @@ class EventoRepo:
         except sqlite3.Error as ex:
             print(ex)
             return None
+    
+    @classmethod
+    def obter_por_chave_unica(cls, chave_unica: str) -> Optional[Evento]:
+        try:
+            with obter_conexao() as conexao:
+                cursor = conexao.cursor()
+                tupla = cursor.execute(SQL_OBTER_POR_CHAVE_UNICA, (chave_unica,)).fetchone()
+                evento = Evento(*tupla)
+                return evento
+        except sqlite3.Error as ex:
+            print(ex)
+            return None
+
 
     # @classmethod
     # def obter_quantidade_por_perfil(cls, perfil: int = 1) -> Optional[int]:

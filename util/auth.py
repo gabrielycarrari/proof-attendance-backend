@@ -1,9 +1,9 @@
 from datetime import datetime
 import bcrypt
 
-def obter_hash_senha(senha: str) -> str:
+def obter_hash(termo: str) -> str:
     try:
-        hashed = bcrypt.hashpw(senha.encode(), bcrypt.gensalt())
+        hashed = bcrypt.hashpw(termo.encode(), bcrypt.gensalt())
         return hashed.decode()
     except ValueError:
         return ""

@@ -90,3 +90,9 @@ SQL_OBTER_QUANTIDADE_BUSCA = """
     SELECT COUNT(*) FROM usuario
     WHERE nome LIKE ? OR cpf LIKE ?
 """
+
+SQL_OBTER_POR_CHAVE_UNICA = """
+    SELECT id, nome, descricao, carga_horaria, data_inicio, hora_inicio, chave_unica
+    FROM evento
+    WHERE chave_unica=?
+"""
