@@ -110,24 +110,24 @@ class EventoRepo:
             return None
 
 
-    # @classmethod
-    # def obter_quantidade_por_perfil(cls, perfil: int = 1) -> Optional[int]:
-    #     try:
-    #         with obter_conexao() as conexao:
-    #             cursor = conexao.cursor()
-    #             tupla = cursor.execute(SQL_OBTER_QUANTIDADE_POR_PERFIL, (perfil,)).fetchone()
-    #             return int(tupla[0])
-    #     except sqlite3.Error as ex:
-    #         print(ex)
-    #         return None
+    @classmethod
+    def obter_quantidade_total(cls,) -> Optional[int]:
+        try:
+            with obter_conexao() as conexao:
+                cursor = conexao.cursor()
+                tupla = cursor.execute(SQL_OBTER_QUANTIDADE_TOTAL,).fetchone()
+                return int(tupla[0])
+        except sqlite3.Error as ex:
+            print(ex)
+            return None
 
-    # @classmethod
-    # def inserir_usuarios_json(cls, arquivo_json: str):
-    #     if UsuarioRepo.obter_quantidade_por_perfil() == 0:
-    #         with open(arquivo_json, "r", encoding="utf-8") as arquivo:
-    #             usuarios = json.load(arquivo)
-    #             for usuario in usuarios:
-    #                 UsuarioRepo.inserir(Usuario(**usuario))
+    @classmethod
+    def inserir_eventos_json(cls, arquivo_json: str):
+        if EventoRepo.obter_quantidade_total() == 0:
+            with open(arquivo_json, "r", encoding="utf-8") as arquivo:
+                eventos = json.load(arquivo)
+                for evento in eventos:
+                    EventoRepo.inserir(Evento(**evento))
 
     # @classmethod
     # def obter_todos(cls) -> List[Usuario]:

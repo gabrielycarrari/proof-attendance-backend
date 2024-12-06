@@ -1,14 +1,5 @@
 [
     {
-        "id": 0,
-        "nome": "Administrador Geral",
-        "cpf": "000.000.000-00",
-        "email": "admin@email.com",
-        "perfil": "0",
-        "senha": "$2b$12$TJYfq2QCDwstKUtrpx6ZK.wnKS2AXPqhcKGVsffuVetYg1eUTMot2",
-        "token": ""
-    },
-    {
         "id": 1,
         "nome": "João Silva",
         "cpf": "123.456.789-01",
@@ -58,7 +49,7 @@
         "nome": "Fernanda Lima",
         "cpf": "678.901.234-56",
         "email": "fernanda@email.com",
-        "perfil": "1",
+        "perfil": "0",
         "senha": "$2b$12$TJYfq2QCDwstKUtrpx6ZK.wnKS2AXPqhcKGVsffuVetYg1eUTMot2",
         "token": ""
     },
@@ -67,7 +58,7 @@
         "nome": "Ricardo Costa",
         "cpf": "789.012.345-67",
         "email": "ricardo@email.com",
-        "perfil": "1",
+        "perfil": "0",
         "senha": "$2b$12$TJYfq2QCDwstKUtrpx6ZK.wnKS2AXPqhcKGVsffuVetYg1eUTMot2",
         "token": ""
     },
@@ -76,7 +67,7 @@
         "nome": "Juliana Alves",
         "cpf": "890.123.456-78",
         "email": "juliana@email.com",
-        "perfil": "1",
+        "perfil": "0",
         "senha": "$2b$12$TJYfq2QCDwstKUtrpx6ZK.wnKS2AXPqhcKGVsffuVetYg1eUTMot2",
         "token": ""
     },
@@ -85,7 +76,7 @@
         "nome": "Marcos Silva",
         "cpf": "901.234.567-89",
         "email": "marcos@email.com",
-        "perfil": "1",
+        "perfil": "0",
         "senha": "$2b$12$TJYfq2QCDwstKUtrpx6ZK.wnKS2AXPqhcKGVsffuVetYg1eUTMot2",
         "token": ""
     },
@@ -94,7 +85,7 @@
         "nome": "Patrícia Moreira",
         "cpf": "012.345.678-90",
         "email": "patricia@email.com",
-        "perfil": "1",
+        "perfil": "0",
         "senha": "$2b$12$TJYfq2QCDwstKUtrpx6ZK.wnKS2AXPqhcKGVsffuVetYg1eUTMot2",
         "token": ""
     }

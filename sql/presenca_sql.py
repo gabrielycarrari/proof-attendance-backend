@@ -15,7 +15,7 @@ SQL_INSERIR = """
 """
 
 SQL_OBTER_TODOS_POR_PARTICIPANTE = """
-    SELECT id, id_evento, codigo_autenticacao
+    SELECT id, id_participante, id_evento, codigo_autenticacao
     FROM presenca
     WHERE id_participante=?
     ORDER BY id DESC

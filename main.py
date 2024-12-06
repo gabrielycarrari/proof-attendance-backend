@@ -26,6 +26,7 @@ from util.auth import gerar_chave_unica, obter_hash, conferir_senha
 UsuarioRepo.criar_tabela()
 UsuarioRepo.inserir_usuarios_json("sql/usuarios.json")
 EventoRepo.criar_tabela()
+EventoRepo.inserir_eventos_json("sql/eventos.json")
 PresencaRepo.criar_tabela()
 
 
@@ -89,7 +90,7 @@ async def cadastrar_evento(evento_dto: InserirEventoDto):
 
 
 @app.get("/obter_evento/{id_evento}")
-async def obter_eventos(id_evento: int = Path(..., title="Id do Evento", ge=1)):
+async def obter_evento(id_evento: int = Path(..., title="Id do Evento", ge=1)):
     evento = EventoRepo.obter_por_id(id_evento)
     return evento
 
@@ -149,11 +150,12 @@ async def registrar_presenca(presenca_dto: RegistrarPresencaDto):
         pd = ProblemDetailsDto("str", "Participante não encontrado.", "value_not_found", ["body", "id_participante"])
         return JSONResponse(pd.to_dict(), status_code=404)
     
-    # verificar se presenca já existe
-    codigo_autenticacao = str(presenca_dto.id_participante) + evento.chave_unica
+    # TODO: verificar se presenca já existe
+    chave_evento = gerar_chave_unica(evento.id_organizador, evento.nome, evento.data_inicio, evento.hora_inicio)
+    codigo_autenticacao = str(presenca_dto.id_participante) + chave_evento
     codigo_autenticacao = obter_hash(codigo_autenticacao)
     #TODO: Validar hora, data e evento finalizado
 
-    nova_presenca = Presenca(None, presenca_dto.id_participante, presenca_dto.id_evento, codigo_autenticacao)
+    nova_presenca = Presenca(None, participante.id, evento.id, codigo_autenticacao)
     nova_presenca = PresencaRepo.inserir(nova_presenca)
     return nova_presenca

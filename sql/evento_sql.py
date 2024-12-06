@@ -30,18 +30,6 @@ SQL_ALTERAR = """
     WHERE id=?
 """
 
-###
-SQL_ALTERAR_TOKEN = """
-    UPDATE usuario
-    SET token=?
-    WHERE id=?
-"""
-
-SQL_ALTERAR_SENHA = """
-    UPDATE usuario
-    SET senha=?
-    WHERE id=?
-"""
 
 SQL_EXCLUIR = """
     DELETE FROM evento    
@@ -49,27 +37,14 @@ SQL_EXCLUIR = """
 """
 
 SQL_OBTER_POR_ID = """
-    SELECT id, nome, descricao, carga_horaria, data_inicio, hora_inicio, chave_unica
+    SELECT id, nome, descricao, carga_horaria, data_inicio, hora_inicio, chave_unica, id_organizador
     FROM evento
     WHERE id=?
 """
 
-SQL_OBTER_POR_EMAIL = """
-    SELECT id, nome, cpf, email, perfil, senha
-    FROM usuario
-    WHERE email=?
-"""
-
-SQL_OBTER_POR_TOKEN = """
-    SELECT id, nome, cpf, email, perfil
-    FROM usuario
-    WHERE token=?
-"""
-
-SQL_OBTER_QUANTIDADE_POR_PERFIL = """
+SQL_OBTER_QUANTIDADE_TOTAL = """
     SELECT COUNT(*)
-    FROM usuario
-    WHERE perfil=?
+    FROM evento
 """
 
 SQL_OBTER_TODOS = """
