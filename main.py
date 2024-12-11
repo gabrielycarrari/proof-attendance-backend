@@ -1,10 +1,11 @@
 from io import BytesIO
+import io
 from fastapi import FastAPI, Form, Path
 from fastapi.middleware.cors import CORSMiddleware
 
 from pydantic import BaseModel
 from fastapi import HTTPException, status
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 
 from dtos.alterar_evento_dto import AlterarEventoDto
 from dtos.entrar_dto import EntrarDto
@@ -149,6 +150,7 @@ async def obter_presencas(id_participante: int = Path(..., title="Id do Particip
             data_inicio = evento.data_inicio,
             hora_inicio = evento.hora_inicio,
             id_organizador = evento.id_organizador,
+            id_presenca = presenca.id,
             qtd_participantes = qtd_participantes
         )
         eventos.append(evento_com_qtd)
@@ -179,9 +181,9 @@ async def registrar_presenca(presenca_dto: RegistrarPresencaDto):
 
 
 
-@app.post("/generate-certificate/{id_presenca}")
+@app.get("/generate-certificate/{id_presenca}")
 async def generate_pdf(id_presenca: int = Path(..., title="Id da Presença", ge=1)):
-    presenca = EventoRepo.obter_por_id(id_presenca)
+    presenca = PresencaRepo.obter_por_id(id_presenca)
     if not presenca:
         pd = ProblemDetailsDto("str", "Presença não encontrada.", "value_not_found", ["body", "id_presenca"])
         return JSONResponse(pd.to_dict(), status_code=404)
@@ -192,7 +194,17 @@ async def generate_pdf(id_presenca: int = Path(..., title="Id da Presença", ge=
         pd = ProblemDetailsDto("str", "Evento ou participante não encontrado.", "value_not_found", ["body", "id_evento", "id_participante"])
         return JSONResponse(pd.to_dict(), status_code=404)
     
-    certificate_pdf = generate_certificate(participante.nome, evento.data_inicio, evento.hora_inicio, evento.carga_horaria, evento.chave_unica, evento.nome)
-    with open(certificate_pdf, "rb") as file:
-        filename = f"certificate_{evento.nome.split(" ")[0]}_{participante.nome.split(" ")[0]}.pdf"
-        return FileResponse(file, media_type='application/pdf', filename=filename)
+    # certificate_pdf = generate_certificate(participante.nome, evento.data_inicio, evento.hora_inicio, evento.carga_horaria, evento.chave_unica, evento.nome)
+    # with open(certificate_pdf, "rb") as file:
+    #     filename = f"certificate_{evento.nome.split(" ")[0]}_{participante.nome.split(" ")[0]}.pdf"
+    #     return FileResponse(file, media_type='application/pdf', filename=filename)
+    pdf_content = generate_certificate(participante.nome, evento.data_inicio, evento.hora_inicio, evento.carga_horaria, evento.chave_unica, evento.nome)
+
+    # Cria um buffer com o conteúdo do PDF
+    pdf_buffer = io.BytesIO(pdf_content)
+
+    # Define o nome do arquivo para download
+    filename = f"certificate_{evento.nome.split(' ')[0]}_{participante.nome.split(' ')[0]}.pdf"
+    
+    # Retorna o PDF como uma resposta de streaming
+    return StreamingResponse(pdf_buffer, media_type='application/pdf', headers={"Content-Disposition": f"attachment; filename={filename}"})

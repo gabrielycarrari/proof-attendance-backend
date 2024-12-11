@@ -12,6 +12,7 @@ class EventoComQtdDto(BaseModel):
     data_inicio: date
     hora_inicio: time
     id_organizador: int
+    id_presenca: int
     qtd_participantes: int
 
   
