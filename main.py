@@ -76,7 +76,22 @@ async def entrar(entrar_dto: EntrarDto):
 @app.get("/obter_eventos/{id_organizador}")
 async def obter_eventos(id_organizador: int = Path(..., title="Id do Organizador", ge=1)):
     eventos = EventoRepo.obter_todos_por_organizador(id_organizador)
-    return eventos
+    eventos_dto = []
+    for e in eventos:
+        qtd_participantes = PresencaRepo.obter_quantidade_por_evento(e.id)
+        evento_com_qtd = EventoComQtdDto(
+            id = e.id,
+            nome = e.nome,
+            descricao = e.descricao,
+            carga_horaria = e.carga_horaria,
+            data_inicio = e.data_inicio,
+            hora_inicio = e.hora_inicio,
+            id_organizador = id_organizador,
+            id_presenca = 0,
+            qtd_participantes = qtd_participantes
+        )
+        eventos_dto.append(evento_com_qtd)
+    return eventos_dto
 
 
 @app.post("/cadastrar_evento", status_code=200)
@@ -95,7 +110,21 @@ async def cadastrar_evento(evento_dto: InserirEventoDto):
 @app.get("/obter_evento/{id_evento}")
 async def obter_evento(id_evento: int = Path(..., title="Id do Evento", ge=1)):
     evento = EventoRepo.obter_por_id(id_evento)
-    return evento
+    if not evento:
+        return None
+    qtd_participantes = PresencaRepo.obter_quantidade_por_evento(id_evento)
+    evento_com_qtd = EventoComQtdDto(
+            id = evento.id,
+            nome = evento.nome,
+            descricao = evento.descricao,
+            carga_horaria = evento.carga_horaria,
+            data_inicio = evento.data_inicio,
+            hora_inicio = evento.hora_inicio,
+            id_organizador = evento.id_organizador,
+            id_presenca = 0,
+            qtd_participantes = qtd_participantes
+        )
+    return evento_com_qtd
 
 
 @app.post("/alterar_evento", status_code=200)
@@ -107,7 +136,6 @@ async def alterar_evento(evento_dto: AlterarEventoDto):
     
     chave_unica = gerar_chave_unica(evento_dto.id_organizador, evento_dto.nome, evento_dto.data_inicio, evento_dto.hora_inicio)
 
-    
     #TODO: Validar se a chave única já existe
     #TODO: Validar se a data e hora do evento já passou
     #TODO: Validar o id do organizador
@@ -194,10 +222,6 @@ async def generate_pdf(id_presenca: int = Path(..., title="Id da Presença", ge=
         pd = ProblemDetailsDto("str", "Evento ou participante não encontrado.", "value_not_found", ["body", "id_evento", "id_participante"])
         return JSONResponse(pd.to_dict(), status_code=404)
     
-    # certificate_pdf = generate_certificate(participante.nome, evento.data_inicio, evento.hora_inicio, evento.carga_horaria, evento.chave_unica, evento.nome)
-    # with open(certificate_pdf, "rb") as file:
-    #     filename = f"certificate_{evento.nome.split(" ")[0]}_{participante.nome.split(" ")[0]}.pdf"
-    #     return FileResponse(file, media_type='application/pdf', filename=filename)
     pdf_content = generate_certificate(participante.nome, evento.data_inicio, evento.hora_inicio, evento.carga_horaria, evento.chave_unica, evento.nome)
 
     # Cria um buffer com o conteúdo do PDF
