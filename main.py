@@ -8,9 +8,13 @@ from fastapi.responses import FileResponse, JSONResponse
 
 from dtos.alterar_evento_dto import AlterarEventoDto
 from dtos.entrar_dto import EntrarDto
+from dtos.evento_com_qtd_dto import EventoComQtdDto
 from dtos.inserir_evento_dto import InserirEventoDto
+from dtos.registrar_presenca_dto import RegistrarPresencaDto
 from models.evento_model import Evento
+from models.presenca_model import Presenca
 from repositories.evento_repo import EventoRepo
+from repositories.presenca_repo import PresencaRepo
 from repositories.usuario_repo import UsuarioRepo
 
 from routes import auth_routes, certificate_routes
@@ -18,12 +22,14 @@ from dtos.inserir_usuario_dto import InserirUsuarioDTO
 from dtos.problem_details_dto import ProblemDetailsDto
 from models.usuario_model import Usuario
 from repositories.usuario_repo import UsuarioRepo
-from util.auth import gerar_chave_unica, obter_hash_senha, conferir_senha
+from util.auth import gerar_chave_unica, obter_hash, conferir_senha
 from util.generate_certificate import generate_certificate
 
 UsuarioRepo.criar_tabela()
 UsuarioRepo.inserir_usuarios_json("sql/usuarios.json")
 EventoRepo.criar_tabela()
+EventoRepo.inserir_eventos_json("sql/eventos.json")
+PresencaRepo.criar_tabela()
 
 
 app = FastAPI()
@@ -38,7 +44,7 @@ app.add_middleware(
 @app.post("/cadastrar_usuario", status_code=200)
 async def cadastrar_usuario(usuario_dto: InserirUsuarioDTO):
     usuario_data = usuario_dto.model_dump(exclude={"confirmacao_senha"})
-    usuario_data["senha"] = obter_hash_senha(usuario_data["senha"])
+    usuario_data["senha"] = obter_hash(usuario_data["senha"])
     novo_usuario = UsuarioRepo.inserir(Usuario(**usuario_data))
     if not novo_usuario or not novo_usuario.id:
         pd = ProblemDetailsDto("str", "Erro ao cadastrar usuário.", "value_not_found", ["body"])
@@ -86,7 +92,7 @@ async def cadastrar_evento(evento_dto: InserirEventoDto):
 
 
 @app.get("/obter_evento/{id_evento}")
-async def obter_eventos(id_evento: int = Path(..., title="Id do Evento", ge=1)):
+async def obter_evento(id_evento: int = Path(..., title="Id do Evento", ge=1)):
     evento = EventoRepo.obter_por_id(id_evento)
     return evento
 
@@ -120,6 +126,56 @@ async def excluir_evento(id_evento: int = Form(..., title="Id do Evento", ge=1))
         ["body", "id_evento"],
     )
     return JSONResponse(pd.to_dict(), status_code=404)
+
+@app.get("/obter_evento_por_chave/{chave_unica}")
+async def obter_evento_por_chave(chave_unica: str = Path(..., title="Chave única")):
+    evento = EventoRepo.obter_por_chave_unica(chave_unica)
+    return evento
+
+
+### Presenças
+@app.get("/obter_presencas/{id_participante}")
+async def obter_presencas(id_participante: int = Path(..., title="Id do Participante", ge=1)):
+    presencas = PresencaRepo.obter_todos_por_participante(id_participante)
+    eventos = []
+    for presenca in presencas:
+        evento = EventoRepo.obter_por_id(presenca.id_evento)
+        qtd_participantes = PresencaRepo.obter_quantidade_por_evento(presenca.id_evento)
+        evento_com_qtd = EventoComQtdDto(
+            id = evento.id,
+            nome = evento.nome,
+            descricao = evento.descricao,
+            carga_horaria = evento.carga_horaria,
+            data_inicio = evento.data_inicio,
+            hora_inicio = evento.hora_inicio,
+            id_organizador = evento.id_organizador,
+            qtd_participantes = qtd_participantes
+        )
+        eventos.append(evento_com_qtd)
+    return eventos
+
+
+@app.post("/registrar_presenca", status_code=200)
+async def registrar_presenca(presenca_dto: RegistrarPresencaDto):
+    evento = EventoRepo.obter_por_id(presenca_dto.id_evento)
+    if not evento:
+        pd = ProblemDetailsDto("str", "Evento não encontrado.", "value_not_found", ["body", "id_evento"])
+        return JSONResponse(pd.to_dict(), status_code=404)
+
+    participante = UsuarioRepo.obter_por_id(presenca_dto.id_participante)
+    if not participante:
+        pd = ProblemDetailsDto("str", "Participante não encontrado.", "value_not_found", ["body", "id_participante"])
+        return JSONResponse(pd.to_dict(), status_code=404)
+    
+    # TODO: verificar se presenca já existe
+    chave_evento = gerar_chave_unica(evento.id_organizador, evento.nome, evento.data_inicio, evento.hora_inicio)
+    codigo_autenticacao = str(presenca_dto.id_participante) + chave_evento
+    codigo_autenticacao = obter_hash(codigo_autenticacao)
+    #TODO: Validar hora, data e evento finalizado
+
+    nova_presenca = Presenca(None, participante.id, evento.id, codigo_autenticacao)
+    nova_presenca = PresencaRepo.inserir(nova_presenca)
+    return nova_presenca
 
 
 
