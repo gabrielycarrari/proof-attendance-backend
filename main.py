@@ -7,6 +7,7 @@ from fastapi.responses import JSONResponse
 
 from dtos.alterar_evento_dto import AlterarEventoDto
 from dtos.entrar_dto import EntrarDto
+from dtos.evento_com_qtd_dto import EventoComQtdDto
 from dtos.inserir_evento_dto import InserirEventoDto
 from dtos.registrar_presenca_dto import RegistrarPresencaDto
 from models.evento_model import Evento
@@ -135,7 +136,22 @@ async def obter_evento_por_chave(chave_unica: str = Path(..., title="Chave únic
 @app.get("/obter_presencas/{id_participante}")
 async def obter_presencas(id_participante: int = Path(..., title="Id do Participante", ge=1)):
     presencas = PresencaRepo.obter_todos_por_participante(id_participante)
-    return presencas
+    eventos = []
+    for presenca in presencas:
+        evento = EventoRepo.obter_por_id(presenca.id_evento)
+        qtd_participantes = PresencaRepo.obter_quantidade_por_evento(presenca.id_evento)
+        evento_com_qtd = EventoComQtdDto(
+            id = evento.id,
+            nome = evento.nome,
+            descricao = evento.descricao,
+            carga_horaria = evento.carga_horaria,
+            data_inicio = evento.data_inicio,
+            hora_inicio = evento.hora_inicio,
+            id_organizador = evento.id_organizador,
+            qtd_participantes = qtd_participantes
+        )
+        eventos.append(evento_com_qtd)
+    return eventos
 
 
 @app.post("/registrar_presenca", status_code=200)

@@ -89,3 +89,13 @@ class PresencaRepo:
             print(ex)
             return None
 
+    @classmethod
+    def obter_quantidade_por_evento(cls, id_evento: int) -> Optional[int]:
+        try:
+            with obter_conexao() as conexao:
+                cursor = conexao.cursor()
+                tupla = cursor.execute(SQL_OBTER_QUANTIDADE_POR_EVENTO, (id_evento,)).fetchone()
+                return int(tupla[0])
+        except sqlite3.Error as ex:
+            print(ex)
+            return None

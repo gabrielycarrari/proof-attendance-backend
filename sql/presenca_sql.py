@@ -40,3 +40,8 @@ SQL_OBTER_POR_ID = """
     WHERE id=?
 """
 
+SQL_OBTER_QUANTIDADE_POR_EVENTO = """
+    SELECT COUNT(*)
+    FROM presenca
+    WHERE id_evento=?
+"""
