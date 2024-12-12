@@ -87,6 +87,7 @@ async def obter_eventos(id_organizador: int = Path(..., title="Id do Organizador
             data_inicio = e.data_inicio,
             hora_inicio = e.hora_inicio,
             id_organizador = id_organizador,
+            chave_unica=e.chave_unica,
             id_presenca = 0,
             qtd_participantes = qtd_participantes
         )
@@ -97,12 +98,13 @@ async def obter_eventos(id_organizador: int = Path(..., title="Id do Organizador
 @app.post("/cadastrar_evento", status_code=200)
 async def cadastrar_evento(evento_dto: InserirEventoDto):
     chave_unica = gerar_chave_unica(evento_dto.id_organizador, evento_dto.nome, evento_dto.data_inicio, evento_dto.hora_inicio)
+    chave_unica_hash = obter_hash(chave_unica)
 
     #TODO: Validar se a chave única já existe
     #TODO: Validar se a data e hora do evento já passou
     #TODO: Validar o id do organizador
     hora_inicio = evento_dto.hora_inicio.strftime('%H:%M') 
-    novo_evento = Evento(None, evento_dto.nome, evento_dto.descricao, evento_dto.carga_horaria, evento_dto.data_inicio, hora_inicio, chave_unica, evento_dto.id_organizador)
+    novo_evento = Evento(None, evento_dto.nome, evento_dto.descricao, evento_dto.carga_horaria, evento_dto.data_inicio, hora_inicio, chave_unica_hash, evento_dto.id_organizador)
     novo_evento = EventoRepo.inserir(novo_evento)
     return novo_evento
 
@@ -121,6 +123,7 @@ async def obter_evento(id_evento: int = Path(..., title="Id do Evento", ge=1)):
             data_inicio = evento.data_inicio,
             hora_inicio = evento.hora_inicio,
             id_organizador = evento.id_organizador,
+            chave_unica=evento.chave_unica,
             id_presenca = 0,
             qtd_participantes = qtd_participantes
         )
@@ -177,6 +180,7 @@ async def obter_presencas(id_participante: int = Path(..., title="Id do Particip
             carga_horaria = evento.carga_horaria,
             data_inicio = evento.data_inicio,
             hora_inicio = evento.hora_inicio,
+            chave_unica = evento.chave_unica,
             id_organizador = evento.id_organizador,
             id_presenca = presenca.id,
             qtd_participantes = qtd_participantes

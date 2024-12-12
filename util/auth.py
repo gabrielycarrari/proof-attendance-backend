@@ -19,11 +19,18 @@ def conferir_senha(senha: str, hash_senha: str) -> bool:
 def gerar_chave_unica(id_organizador, nome_evento, data_inicio, hora_inicio):
     sigla_evento = ''.join([word[0].upper() for word in nome_evento.split()][:3])
 
-    if not isinstance(data_inicio, datetime):
-        data_inicio = datetime.strptime(data_inicio, '%Y-%m-%d')
 
-    if not isinstance(hora_inicio, datetime):
+    if not isinstance(data_inicio, datetime):
+        if isinstance(data_inicio, str):
+            data_inicio = datetime.strptime(data_inicio, '%Y-%m-%d')
+        else:
+            data_inicio = datetime.strptime(data_inicio.strftime('%Y-%m-%d'), '%Y-%m-%d')
+
+    if isinstance(hora_inicio, datetime):
+        hora_inicio = hora_inicio.strftime('%H:%M')
         hora_inicio = datetime.strptime(hora_inicio, '%H:%M')
+    elif isinstance(hora_inicio, str):
+        hora_inicio = datetime.strptime(hora_inicio, '%H:%M')   
 
     data_formatada = data_inicio.strftime('%d%m%Y')  
     hora_formatada = hora_inicio.strftime('%H%M') 

@@ -6,7 +6,7 @@
     "carga_horaria": 2,
     "data_inicio": "2024-12-10",
     "hora_inicio": "09:00",
-    "chave_unica": "$2b$12$NZGE61eEP37ZXXxD8KWAO.vu4l7SAABDHBAndxERtEwg/EsJ9LIyW",
+    "chave_unica": "$2b$12$Kd2G4.07ckS.5SmV5xG2LueIJHBSviwYwTWoKNz5rWfPvJGbgstiy",
     "id_organizador": 6
   },
   {
@@ -14,7 +14,7 @@
     "nome": "Webinar: Como Usar Git no Desenvolvimento",
     "descricao": "Aprenda os fundamentos do Git e como utilizá-lo em seus projetos de desenvolvimento.",
     "carga_horaria": 3,
-    "data_inicio": "2024-12-12",
+    "data_inicio": "2024-12-10",
     "hora_inicio": "14:00",
     "chave_unica": "$2b$12$P9W/GQwRa5qDVzZc9GfH1eMdPkQ.BOB3heCKJrK44jnkyW1a.JKqW",
     "id_organizador": 7
@@ -24,7 +24,7 @@
     "nome": "Treinamento de Excel para Iniciantes",
     "descricao": "Curso rápido para iniciantes aprenderem os recursos básicos do Excel.",
     "carga_horaria": 4,
-    "data_inicio": "2024-12-14",
+    "data_inicio": "2024-12-10",
     "hora_inicio": "16:00",
     "chave_unica": "$2b$12$idsloH8x6x8GKjrk6ZaFMep0pSc4C5nJI.QDZN.YFEVQ56Omr.cjy",
     "id_organizador": 8
@@ -34,9 +34,9 @@
     "nome": "Palestra sobre Marketing Digital",
     "descricao": "Entenda os conceitos básicos de marketing digital e como aplicar em sua estratégia de negócios.",
     "carga_horaria": 2,
-    "data_inicio": "2024-12-16",
+    "data_inicio": "2024-12-10",
     "hora_inicio": "10:00",
-    "chave_unica": "$2b$12$5sGqG6vAuF90snq.rEee1.uAbOr6jLJcU2HA9WbRQMi./igrbgSeK",
+    "chave_unica": "$2b$12$qbBhFx6LBTrzJclEnccGc.YI8jrYHskvMycvcMkXvNHRnMuMYEp12",
     "id_organizador": 9
   },
   {
@@ -44,7 +44,7 @@
     "nome": "Workshop de Design Gráfico com Canva",
     "descricao": "Aprenda a criar designs atrativos utilizando a ferramenta Canva de forma prática.",
     "carga_horaria": 3,
-    "data_inicio": "2024-12-18",
+    "data_inicio": "2024-12-10",
     "hora_inicio": "13:30",
     "chave_unica": "$2b$12$ng9VFBesTZi0U6Iv12bWyuQEKn33nlvuh2XlhcJ9v7ZMSBtXmkVU2",
     "id_organizador": 10
